@@ -4,7 +4,6 @@ import Paste from '../models/Paste.js';
 
 const router = express.Router();
 
-// Create a new paste
 router.post('/', auth, async (req, res) => {
   try {
     const paste = new Paste({
@@ -19,7 +18,6 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// Get all pastes for current user
 router.get('/', auth, async (req, res) => {
   try {
     const pastes = await Paste.find({ userId: req.user._id }).sort({ createdAt: -1 });
@@ -29,7 +27,7 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Get a specific paste by ID
+
 router.get('/:id', auth, async (req, res) => {
   try {
     const paste = await Paste.findOne({ _id: req.params.id, userId: req.user._id });
@@ -44,7 +42,6 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
-// Update a paste
 router.put('/:id', auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ['title', 'content', 'tags'];
@@ -70,7 +67,6 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-// Delete a paste
 router.delete('/:id', auth, async (req, res) => {
   try {
     const paste = await Paste.findOneAndDelete({
@@ -88,7 +84,6 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-// Search pastes
 router.get('/search', auth, async (req, res) => {
   try {
     const query = req.query.q;
@@ -97,7 +92,6 @@ router.get('/search', auth, async (req, res) => {
       return res.status(400).send({ message: 'Search query is required' });
     }
     
-    // Search by text index (title, content, tags)
     const pastes = await Paste.find({
       $and: [
         { userId: req.user._id },
