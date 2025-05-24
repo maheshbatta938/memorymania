@@ -3,7 +3,6 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-// Register a new user
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -22,14 +21,12 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       console.log('Registration failed: Email already exists:', email);
       return res.status(400).json({ message: 'Email already in use' });
     }
     
-    // Create new user
     const user = new User({ name, email, password });
     console.log('Created user object:', { 
       id: user._id,
@@ -37,11 +34,9 @@ router.post('/register', async (req, res) => {
       email: user.email
     });
 
-    // Save user to database
     await user.save();
     console.log('User saved successfully:', user._id);
     
-    // Generate token
     const token = await user.generateAuthToken();
     console.log('Auth token generated for user:', user._id);
     
@@ -51,8 +46,8 @@ router.post('/register', async (req, res) => {
       token 
     });
   } catch (error) {
-    console.error('Registration error:', error);
-    console.error('Error details:', {
+    console.log('Registration error:', error);
+    console.log('Error details:', {
       name: error.name,
       message: error.message,
       code: error.code
@@ -72,7 +67,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login user
+
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -89,7 +84,7 @@ router.post('/login', async (req, res) => {
       });
     }
     
-    // Find user by credentials
+ 
     const user = await User.findByCredentials(email, password);
     console.log('User found:', user._id);
     
