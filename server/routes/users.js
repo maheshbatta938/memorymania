@@ -4,12 +4,12 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-// Get user profile
+
 router.get('/profile', auth, async (req, res) => {
   res.send(req.user);
 });
 
-// Update user profile
+
 router.patch('/profile', auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ['name', 'email', 'password'];
@@ -39,7 +39,7 @@ router.post('/logout', auth, async (req, res) => {
   }
 });
 
-// Logout from all devices
+
 router.post('/logoutAll', auth, async (req, res) => {
   try {
     req.user.tokens = [];
