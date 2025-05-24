@@ -26,7 +26,6 @@ const pasteSchema = new mongoose.Schema(
   }
 );
 
-// Create index for search functionality
 pasteSchema.index({ title: 'text', content: 'text', tags: 'text' });
 
 const Paste = mongoose.model('Paste', pasteSchema);
