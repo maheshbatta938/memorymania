@@ -42,7 +42,7 @@ userSchema.virtual('pastes', {
   foreignField: 'userId',
 });
 
-// Hash password before saving
+
 userSchema.pre('save', async function (next) {
   const user = this;
   if (user.isModified('password')) {
@@ -51,7 +51,6 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// Generate JWT token
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
   const JWT_SECRET = 'memorymania_secret_key_2024';
@@ -61,7 +60,7 @@ userSchema.methods.generateAuthToken = async function () {
   return token;
 };
 
-// Return user data without sensitive information
+
 userSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
@@ -72,7 +71,7 @@ userSchema.methods.toJSON = function () {
   return userObject;
 };
 
-// Find user by credentials
+
 userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) {
