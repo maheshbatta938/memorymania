@@ -2,8 +2,6 @@
 
 A MERN stack application for sharing and managing code snippets.
 
-## Deployment Instructions
-
 ### Prerequisites
 - Node.js (v14 or higher)
 - MongoDB (v4.4 or higher)
