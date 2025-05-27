@@ -1,5 +1,5 @@
-const API_URL = process.env.NODE_ENV === 'production' 
-  ? '/api' 
-  : 'http://localhost:5000/api';
+const config = {
+  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000'
+};
 
-export default API_URL; 
+export default config; 

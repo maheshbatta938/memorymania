@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
+import config from './config';
 
 import { AuthProvider } from './context/AuthContext';
 import { PasteProvider } from './context/PasteContext';
@@ -16,7 +17,7 @@ import ViewPastePage from './pages/ViewPastePage';
 import SearchPage from './pages/SearchPage';
 
 // Set axios defaults
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = config.apiUrl;
 
 function App() {
   // Initialize dark mode based on user preference

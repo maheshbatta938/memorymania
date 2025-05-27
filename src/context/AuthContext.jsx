@@ -22,6 +22,12 @@ const authReducer = (state, action) => {
         token: action.payload.token,
         error: null,
       };
+    case 'SIGNUP_SUCCESS':
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+      };
     case 'AUTH_FAILURE':
       return {
         ...state,
@@ -78,8 +84,8 @@ export const AuthProvider = ({ children }) => {
         email,
         password,
       });
-      const { user, token } = res.data;
-      dispatch({ type: 'AUTH_SUCCESS', payload: { user, token } });
+      dispatch({ type: 'SIGNUP_SUCCESS' });
+      return res.data;
     } catch (error) {
       dispatch({
         type: 'AUTH_FAILURE',

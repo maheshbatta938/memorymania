@@ -27,6 +27,32 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+router.get('/search', auth, async (req, res) => {
+  try {
+    const query = req.query.q;
+    
+    if (!query) {
+      return res.status(400).send({ message: 'Search query is required' });
+    }
+    
+    const pastes = await Paste.find({
+      $and: [
+        { userId: req.user._id },
+        {
+          $or: [
+            { title: { $regex: query, $options: 'i' } },
+            { content: { $regex: query, $options: 'i' } },
+            { tags: { $in: [new RegExp(query, 'i')] } },
+          ],
+        },
+      ],
+    }).sort({ createdAt: -1 });
+    
+    res.send(pastes);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
 
 router.get('/:id', auth, async (req, res) => {
   try {
@@ -79,33 +105,6 @@ router.delete('/:id', auth, async (req, res) => {
     }
     
     res.send({ message: 'Paste deleted successfully' });
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
-});
-
-router.get('/search', auth, async (req, res) => {
-  try {
-    const query = req.query.q;
-    
-    if (!query) {
-      return res.status(400).send({ message: 'Search query is required' });
-    }
-    
-    const pastes = await Paste.find({
-      $and: [
-        { userId: req.user._id },
-        {
-          $or: [
-            { title: { $regex: query, $options: 'i' } },
-            { content: { $regex: query, $options: 'i' } },
-            { tags: { $in: [new RegExp(query, 'i')] } },
-          ],
-        },
-      ],
-    }).sort({ createdAt: -1 });
-    
-    res.send(pastes);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }

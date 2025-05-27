@@ -35,7 +35,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Virtual relationship with Paste model
 userSchema.virtual('pastes', {
   ref: 'Paste',
   localField: '_id',

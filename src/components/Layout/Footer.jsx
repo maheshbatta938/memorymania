@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center mb-4 md:mb-0">
             <span className="text-gray-600 dark:text-gray-400">
-              © {year} MemoryMania. All rights reserved.
+              © {year} MemoryMania. All rights reserved by MaheshBatta..
             </span>
           </div>
           
