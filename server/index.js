@@ -18,9 +18,13 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const isDevelopment = process.env.NODE_ENV !== 'production';
+const allowedOrigins = isDevelopment
+  ? true 
+  : [process.env.CLIENT_URL];
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
