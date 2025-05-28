@@ -19,12 +19,18 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-const allowedOrigins = isDevelopment
-  ? true 
-  : [process.env.CLIENT_URL];
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: isDevelopment 
+    ? (origin, callback) => {
+        // Allow any localhost origin in development
+        if (!origin || origin.startsWith('http://localhost:')) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      }
+    : process.env.CLIENT_URL,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']

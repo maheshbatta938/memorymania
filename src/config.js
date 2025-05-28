@@ -1,6 +1,7 @@
 const getDevelopmentApiUrl = () => {
   const host = window.location.hostname;
-  return `http://${host}:5000`;
+  const port = 5000; // Backend always runs on port 5000
+  return `http://${host}:${port}`;
 };
 
 const config = {

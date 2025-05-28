@@ -52,7 +52,7 @@ userSchema.pre('save', async function (next) {
 
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
-  const JWT_SECRET = 'memorymania_secret_key_2024';
+  const JWT_SECRET = process.env.JWT_SECRET || 'memorymania_secret_key_2024';
   const token = jwt.sign({ _id: user._id.toString() }, JWT_SECRET);
   user.tokens = user.tokens.concat({ token });
   await user.save();
