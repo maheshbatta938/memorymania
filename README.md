@@ -13,7 +13,7 @@ A full-stack MERN application for creating and managing text snippets and code p
 
 ## Live Demo
 
-Frontend: [Your frontend URL when deployed]
+Frontend: https://memorymania-frontend.onrender.com
 Backend: https://memorymania-kc51.onrender.com
 
 ## Screenshots
