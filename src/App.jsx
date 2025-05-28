@@ -20,7 +20,7 @@ import SearchPage from './pages/SearchPage';
 axios.defaults.baseURL = config.apiUrl;
 
 function App() {
-  // Initialize dark mode based on user preference
+
   useEffect(() => {
     if (localStorage.theme === 'dark' || 
         (!('theme' in localStorage) && 
@@ -36,18 +36,18 @@ function App() {
       <PasteProvider>
         <Router>
           <Routes>
-            {/* Public routes */}
+           
             <Route path="/" element={<MainLayout />}>
               <Route index element={<HomePage />} />
             </Route>
             
-            {/* Auth routes (redirect to dashboard if logged in) */}
+         
             <Route path="/" element={<MainLayout />}>
               <Route path="login" element={<LoginPage />} />
               <Route path="signup" element={<SignupPage />} />
             </Route>
             
-            {/* Protected routes (require authentication) */}
+           
             <Route path="/" element={<MainLayout requireAuth />}>
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="create" element={<CreatePastePage />} />

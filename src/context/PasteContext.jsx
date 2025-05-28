@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
-import API_URL from '../config';
 
 const initialState = {
   pastes: [],
@@ -79,7 +78,7 @@ export const PasteProvider = ({ children }) => {
   const fetchPastes = async () => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.get(`${API_URL}/pastes`);
+      const res = await axios.get('http://localhost:5000/api/pastes');
       dispatch({ type: 'FETCH_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
@@ -92,7 +91,7 @@ export const PasteProvider = ({ children }) => {
   const createPaste = async (paste) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.post(`${API_URL}/pastes`, paste);
+      const res = await axios.post('http://localhost:5000/api/pastes', paste);
       dispatch({ type: 'CREATE_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
@@ -105,7 +104,7 @@ export const PasteProvider = ({ children }) => {
   const updatePaste = async (id, paste) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.put(`${API_URL}/pastes/${id}`, paste);
+      const res = await axios.put(`http://localhost:5000/api/pastes/${id}`, paste);
       dispatch({ type: 'UPDATE_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
@@ -118,7 +117,7 @@ export const PasteProvider = ({ children }) => {
   const deletePaste = async (id) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      await axios.delete(`${API_URL}/pastes/${id}`);
+      await axios.delete(`http://localhost:5000/api/pastes/${id}`);
       dispatch({ type: 'DELETE_SUCCESS', payload: id });
     } catch (error) {
       dispatch({
@@ -131,7 +130,7 @@ export const PasteProvider = ({ children }) => {
   const getPasteById = async (id) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.get(`${API_URL}/pastes/${id}`);
+      const res = await axios.get(`http://localhost:5000/api/pastes/${id}`);
       dispatch({ type: 'GET_PASTE_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
@@ -144,7 +143,7 @@ export const PasteProvider = ({ children }) => {
   const searchPastes = async (query) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.get(`${API_URL}/pastes/search?q=${query}`);
+      const res = await axios.get(`http://localhost:5000/api/pastes/search?q=${query}`);
       dispatch({ type: 'FETCH_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
