@@ -20,6 +20,21 @@ const PORT = process.env.PORT || 5000;
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
+import cors from 'cors';
+
+const corsOptions = {
+  origin: process.env.CLIENT_URL || 'http://localhost:3000', // Your frontend URL here
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+
+
+
+
+
+
 app.use(cors({
   origin: isDevelopment 
     ? (origin, callback) => {
