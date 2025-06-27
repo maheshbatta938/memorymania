@@ -6,7 +6,7 @@ const getDevelopmentApiUrl = () => {
 
 const config = {
   apiUrl: process.env.NODE_ENV === 'production'
-    ? 'https://memorymania-backend.onrender.com'
+    ? 'https://memorymaniaback.onrender.com'
     : getDevelopmentApiUrl()
 };
 
