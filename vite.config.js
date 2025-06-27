@@ -9,7 +9,12 @@ export default defineConfig({
       '/api': 'http://localhost:5000'
     }
   },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    emptyOutDir: true
+  },
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
   }
 }) 

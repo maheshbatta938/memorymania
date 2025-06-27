@@ -1,19 +1,9 @@
 services:
   - type: web
-    name: memorymania-frontend
-    env: static
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
-    pullRequestPreviewsEnabled: true
-    envVars:
-      - key: NODE_ENV
-        value: production
-
-  - type: web
     name: memorymania-backend
     env: node
-    buildCommand: cd server && npm install
-    startCommand: cd server && node index.js
+    buildCommand: npm install
+    startCommand: node server/index.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -25,3 +15,11 @@ services:
         sync: false
       - key: CLIENT_URL
         value: https://memorymania-frontend.onrender.com
+
+  - type: static
+    name: memorymania-frontend
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    envVars:
+      - key: NODE_ENV
+        value: production
