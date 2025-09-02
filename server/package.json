@@ -7,9 +7,9 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "node server/index.js",
     "dev": "nodemon index.js",
-    "build": "npm install"
+    "build": "npm install --prefix server && npm run build --prefix server"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
