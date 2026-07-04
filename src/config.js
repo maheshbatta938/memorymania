@@ -1,13 +1,5 @@
-const getDevelopmentApiUrl = () => {
-  const host = window.location.hostname;
-  const port = 5000; // Backend always runs on port 5000
-  return `http://${host}:${port}`;
-};
-
 const config = {
-  apiUrl:  process.env.REACT_APP_API_URL || process.env.NODE_ENV === 'production'
-    ? 'https://memorymaniaback.onrender.com'
-    : getDevelopmentApiUrl()
+  apiUrl: "https://memorymania-kfgn.onrender.com"
 };
 
-export default config; 
+export default config;
