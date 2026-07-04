@@ -2,7 +2,7 @@ import axios from 'axios';
 import config from '../config';
 
 const api = axios.create({
-  baseURL: `${config.apiUrl}/api`,
+  baseURL: `https://memorymania-kfgn.onrender.com/api`,
   headers: {
     'Content-Type': 'application/json'
   }
