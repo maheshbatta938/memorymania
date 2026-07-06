@@ -91,7 +91,7 @@ export const PasteProvider = ({ children }) => {
   const createPaste = async (paste) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.post('http://localhost:5000/api/pastes', paste);
+      const res = await axios.post('https://memorymania-kfgn.onrender.com/api/pastes', paste);
       dispatch({ type: 'CREATE_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
@@ -104,7 +104,7 @@ export const PasteProvider = ({ children }) => {
   const updatePaste = async (id, paste) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.put(`http://localhost:5000/api/pastes/${id}`, paste);
+      const res = await axios.put(`https://memorymania-kfgn.onrender.com/api/pastes/${id}`, paste);
       dispatch({ type: 'UPDATE_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
@@ -117,7 +117,7 @@ export const PasteProvider = ({ children }) => {
   const deletePaste = async (id) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      await axios.delete(`http://localhost:5000/api/pastes/${id}`);
+      await axios.delete(`https://memorymania-kfgn.onrender.com/api/pastes/${id}`);
       dispatch({ type: 'DELETE_SUCCESS', payload: id });
     } catch (error) {
       dispatch({
@@ -130,7 +130,7 @@ export const PasteProvider = ({ children }) => {
   const getPasteById = async (id) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.get(`http://localhost:5000/api/pastes/${id}`);
+      const res = await axios.get(`https://memorymania-kfgn.onrender.com/api/pastes/${id}`);
       dispatch({ type: 'GET_PASTE_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
@@ -143,7 +143,7 @@ export const PasteProvider = ({ children }) => {
   const searchPastes = async (query) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.get(`http://localhost:5000/api/pastes/search?q=${query}`);
+      const res = await axios.get(`https://memorymania-kfgn.onrender.com/api/pastes/search?q=${query}`);
       dispatch({ type: 'FETCH_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
