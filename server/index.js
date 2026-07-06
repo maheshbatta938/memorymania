@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 5000;
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 //  MongoDB Connection
-const MONGODB_URI =
+const MONGO_URI =
   process.env.MONGO_URI ||
   'mongodb+srv://memoryUser:Memorymania@memorymania.8sak7sm.mongodb.net/memorymania?retryWrites=true&w=majority&appName=memorymania';
 
@@ -40,20 +40,30 @@ mongoose
   });
 
 //  CORS setup
-const corsOptions = {
-  origin: isDevelopment
-    ? (origin, callback) => {
-        if (!origin || origin.startsWith('http://localhost:')) {
-          callback(null, true);
-        } else {
-          callback(new Error('Not allowed by CORS'));
-        }
-      }
-    : process.env.CLIENT_URL,
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://memorymania.vercel.app"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests like Postman (no origin)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    console.log("Blocked Origin:", origin);
+    return callback(new Error("Not allowed by CORS"));
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
 app.use(cors(corsOptions));
 app.use(express.json());
