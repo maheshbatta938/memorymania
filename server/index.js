@@ -43,7 +43,7 @@ mongoose
 const allowedOrigins = [
   "http://localhost:5173",
   "https://memorymaniacomplete.onrender.com",
-  "https://your-vercel-app.vercel.app",
+  "https://memorymania.vercel.app"
 ];
 
 app.use(cors({
