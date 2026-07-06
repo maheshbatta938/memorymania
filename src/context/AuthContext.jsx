@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }) => {
   const signup = async (name, email, password) => {
     dispatch({ type: 'AUTH_START' });
     try {
-      const res = await axios.post('https://memorymania-kfgn.onrender.comapi/auth/register', {
+      const res = await axios.post('https://memorymania-kfgn.onrender.com/api/auth/register', {
         name,
         email,
         password,
