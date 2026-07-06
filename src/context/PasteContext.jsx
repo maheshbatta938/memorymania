@@ -78,7 +78,7 @@ export const PasteProvider = ({ children }) => {
   const fetchPastes = async () => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.get('http://localhost:5000/api/pastes');
+      const res = await axios.get('https://memorymania-kfgn.onrender.com/api/pastes');
       dispatch({ type: 'FETCH_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
