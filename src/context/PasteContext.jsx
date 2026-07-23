@@ -96,11 +96,13 @@ export const PasteProvider = ({ children }) => {
     try {
       const res = await api.post('/pastes', paste);
       dispatch({ type: 'CREATE_SUCCESS', payload: res.data });
+      return res.data;
     } catch (error) {
       dispatch({
         type: 'FETCH_FAILURE',
         payload: error.response?.data?.message || 'Failed to create paste',
       });
+      throw error;
     }
   };
 
@@ -109,11 +111,13 @@ export const PasteProvider = ({ children }) => {
     try {
       const res = await api.put(`/pastes/${id}`, paste);
       dispatch({ type: 'UPDATE_SUCCESS', payload: res.data });
+      return res.data;
     } catch (error) {
       dispatch({
         type: 'FETCH_FAILURE',
         payload: error.response?.data?.message || 'Failed to update paste',
       });
+      throw error;
     }
   };
 
@@ -127,6 +131,7 @@ export const PasteProvider = ({ children }) => {
         type: 'FETCH_FAILURE',
         payload: error.response?.data?.message || 'Failed to delete paste',
       });
+      throw error;
     }
   };
 
@@ -135,11 +140,13 @@ export const PasteProvider = ({ children }) => {
     try {
       const res = await api.get(`/pastes/${id}`);
       dispatch({ type: 'GET_PASTE_SUCCESS', payload: res.data });
+      return res.data;
     } catch (error) {
       dispatch({
         type: 'FETCH_FAILURE',
         payload: error.response?.data?.message || 'Failed to get paste',
       });
+      throw error;
     }
   };
 

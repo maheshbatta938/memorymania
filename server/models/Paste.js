@@ -50,7 +50,10 @@ const pasteSchema = new mongoose.Schema(
   }
 );
 
-pasteSchema.index({ title: 'text', content: 'text', tags: 'text' });
+pasteSchema.index(
+  { title: 'text', content: 'text', tags: 'text' },
+  { language_override: 'dummy_field_not_used' }
+);
 pasteSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 const Paste = mongoose.model('Paste', pasteSchema);
