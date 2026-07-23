@@ -5,7 +5,7 @@ import Input from './ui/Input';
 import Button from './ui/Button';
 import Editor from '@monaco-editor/react';
 import CryptoJS from 'crypto-js';
-import { Save, X, Tag, Globe, Lock, Shield, Clock, Terminal } from 'lucide-react';
+import { Save, X, Tag, Globe, Lock, Shield, Clock, Terminal, Folder } from 'lucide-react';
 
 const LANGUAGES = [
   { value: 'plaintext', label: 'Plain Text' },
@@ -33,7 +33,7 @@ const EXPIRATIONS = [
 
 const PasteForm = ({ isEditing = false, pasteId = '' }) => {
   const navigate = useNavigate();
-  const { createPaste, updatePaste, getPasteById, currentPaste } = usePaste();
+  const { createPaste, updatePaste, getPasteById, currentPaste, folders, fetchFolders } = usePaste();
   
   const [formData, setFormData] = useState({
     title: '',
@@ -44,6 +44,7 @@ const PasteForm = ({ isEditing = false, pasteId = '' }) => {
     expiration: 'never',
     isEncrypted: false,
     burnAfterRead: false,
+    folderId: '',
   });
 
   const [tagInput, setTagInput] = useState('');
@@ -54,6 +55,7 @@ const PasteForm = ({ isEditing = false, pasteId = '' }) => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
+    fetchFolders();
     if (isEditing && pasteId) {
       getPasteById(pasteId);
     }
@@ -81,6 +83,7 @@ const PasteForm = ({ isEditing = false, pasteId = '' }) => {
         expiration: initialExpiration,
         isEncrypted: currentPaste.isEncrypted || false,
         burnAfterRead: currentPaste.burnAfterRead || false,
+        folderId: currentPaste.folderId || '',
       });
 
       // If it's not encrypted, we consider it decrypted
@@ -161,6 +164,7 @@ const PasteForm = ({ isEditing = false, pasteId = '' }) => {
       isEncrypted: isEncryptedPayload,
       expiresAt,
       burnAfterRead,
+      folderId: formData.folderId || null,
     };
 
     try {
@@ -200,6 +204,22 @@ const PasteForm = ({ isEditing = false, pasteId = '' }) => {
       tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
+
+  // Helper Metrics Calculations
+  const getMetrics = () => {
+    const text = formData.content || '';
+    const charCount = text.length;
+    const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const lineCount = text ? text.split('\n').length : 0;
+    const byteSize = new Blob([text]).size;
+    const formattedSize = byteSize > 1024 
+      ? (byteSize / 1024).toFixed(2) + ' KB' 
+      : byteSize + ' B';
+
+    return { charCount, wordCount, lineCount, formattedSize };
+  };
+
+  const { charCount, wordCount, lineCount, formattedSize } = getMetrics();
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -271,6 +291,17 @@ const PasteForm = ({ isEditing = false, pasteId = '' }) => {
                   }}
                 />
               </div>
+
+              {/* Metrics bar */}
+              <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 bg-slate-100 dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800">
+                <div className="flex space-x-4">
+                  <span>Lines: <strong className="text-gray-800 dark:text-gray-200">{lineCount}</strong></span>
+                  <span>Words: <strong className="text-gray-800 dark:text-gray-200">{wordCount}</strong></span>
+                  <span>Chars: <strong className="text-gray-800 dark:text-gray-200">{charCount}</strong></span>
+                </div>
+                <span>Size: <strong className="text-purple-600 dark:text-purple-400 font-semibold">{formattedSize}</strong></span>
+              </div>
+
               {errors.content && <p className="text-sm text-red-500 mt-1">{errors.content}</p>}
             </div>
 
@@ -339,6 +370,27 @@ const PasteForm = ({ isEditing = false, pasteId = '' }) => {
                   {LANGUAGES.map((lang) => (
                     <option key={lang.value} value={lang.value}>
                       {lang.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Folder Selector */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center">
+                  <Folder className="mr-1.5 h-4 w-4 text-gray-500" />
+                  Assign Folder
+                </label>
+                <select
+                  name="folderId"
+                  value={formData.folderId}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="">-- No Folder (Root) --</option>
+                  {folders.map((f) => (
+                    <option key={f._id} value={f._id}>
+                      {f.name}
                     </option>
                   ))}
                 </select>

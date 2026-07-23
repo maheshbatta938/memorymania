@@ -5,15 +5,15 @@ import Button from './ui/Button';
 import Input from './ui/Input';
 import CryptoJS from 'crypto-js';
 import { 
-  Edit, Trash2, ArrowLeft, Calendar, Tag, Clock, Eye, 
-  Copy, Check, Download, Share2, Shield, Lock, FileCode, CheckCheck 
+  Edit, Trash2, ArrowLeft, Calendar, Tag, Clock, Eye, Play,
+  Copy, Check, Download, Share2, Shield, Lock, FileCode, Star, Folder, Terminal as TermIcon
 } from 'lucide-react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 const PasteDetail = ({ isSharedView = false }) => {
   const { id } = useParams();
-  const { getPasteById, getPublicPasteById, deletePaste, currentPaste, isLoading, error } = usePaste();
+  const { getPasteById, getPublicPasteById, deletePaste, toggleStarPaste, currentPaste, folders, isLoading, error } = usePaste();
   const navigate = useNavigate();
 
   const [decryptionPassword, setDecryptionPassword] = useState('');
@@ -24,6 +24,11 @@ const PasteDetail = ({ isSharedView = false }) => {
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [showRaw, setShowRaw] = useState(false);
+
+  // Execution Sandbox State
+  const [showSandbox, setShowSandbox] = useState(false);
+  const [executionLogs, setExecutionLogs] = useState([]);
+  const [htmlSrcDoc, setHtmlSrcDoc] = useState('');
 
   useEffect(() => {
     if (id) {
@@ -51,6 +56,14 @@ const PasteDetail = ({ isSharedView = false }) => {
     if (window.confirm('Are you sure you want to delete this paste?')) {
       deletePaste(id);
       navigate('/dashboard');
+    }
+  };
+
+  const handleStarToggle = async () => {
+    try {
+      await toggleStarPaste(id);
+    } catch (err) {
+      console.error('Failed to toggle star status:', err);
     }
   };
 
@@ -94,6 +107,45 @@ const PasteDetail = ({ isSharedView = false }) => {
     document.body.removeChild(element);
   };
 
+  // Run Code Sandbox Action
+  const handleRunCode = () => {
+    setShowSandbox(true);
+    if (currentPaste.language === 'html') {
+      setHtmlSrcDoc(decryptedContent);
+      setExecutionLogs([]);
+    } else if (currentPaste.language === 'javascript') {
+      setHtmlSrcDoc('');
+      const logs = [];
+      
+      // Override console.log temporarily
+      const originalLog = console.log;
+      const originalError = console.error;
+      
+      console.log = (...args) => {
+        logs.push(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' '));
+      };
+      console.error = (...args) => {
+        logs.push('[ERROR] ' + args.join(' '));
+      };
+
+      try {
+        const runFn = new Function(decryptedContent);
+        const result = runFn();
+        if (result !== undefined) {
+          logs.push('=> Returned: ' + (typeof result === 'object' ? JSON.stringify(result) : String(result)));
+        }
+      } catch (err) {
+        logs.push('Uncaught Exception: ' + err.message);
+      }
+
+      // Restore console
+      console.log = originalLog;
+      console.error = originalError;
+
+      setExecutionLogs(logs.length > 0 ? logs : ['Code executed successfully with zero console output.']);
+    }
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
@@ -104,6 +156,24 @@ const PasteDetail = ({ isSharedView = false }) => {
       minute: '2-digit',
     }).format(date);
   };
+
+  // Metrics calculation
+  const getMetrics = () => {
+    const text = decryptedContent || '';
+    const charCount = text.length;
+    const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const lineCount = text ? text.split('\n').length : 0;
+    const byteSize = new Blob([text]).size;
+    const formattedSize = byteSize > 1024 
+      ? (byteSize / 1024).toFixed(2) + ' KB' 
+      : byteSize + ' B';
+
+    return { charCount, wordCount, lineCount, formattedSize };
+  };
+
+  const { charCount, wordCount, lineCount, formattedSize } = getMetrics();
+  const folder = folders?.find(f => f._id === currentPaste.folderId);
+  const isExecutable = currentPaste && (currentPaste.language === 'javascript' || currentPaste.language === 'html');
 
   if (isLoading) {
     return (
@@ -156,6 +226,14 @@ const PasteDetail = ({ isSharedView = false }) => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
           <div>
             <div className="flex items-center gap-2">
+              {!isSharedView && (
+                <button 
+                  onClick={handleStarToggle} 
+                  className="focus:outline-none text-gray-400 hover:text-yellow-500 transition-colors"
+                >
+                  <Star size={22} className={currentPaste.isStarred ? "fill-yellow-400 text-yellow-400" : ""} />
+                </button>
+              )}
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {currentPaste.title}
               </h1>
@@ -185,6 +263,12 @@ const PasteDetail = ({ isSharedView = false }) => {
                 <span className="flex items-center">
                   <Eye className="mr-1.5 h-3.5 w-3.5" />
                   Views: {currentPaste.viewCount}
+                </span>
+              )}
+              {folder && (
+                <span className="flex items-center">
+                  <Folder className="mr-1.5 h-3.5 w-3.5" />
+                  Folder: {folder.name}
                 </span>
               )}
             </div>
@@ -254,60 +338,130 @@ const PasteDetail = ({ isSharedView = false }) => {
             </form>
           </div>
         ) : (
-          <div className="space-y-4">
-            {/* Editor Action Bar */}
-            <div className="flex justify-between items-center bg-gray-100 dark:bg-gray-900 px-4 py-2 rounded-t-lg border border-gray-300 dark:border-gray-700 border-b-0">
-              <div className="flex items-center space-x-2">
-                <FileCode className="h-4 w-4 text-purple-500" />
-                <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
-                  {currentPaste.language || 'plaintext'}
-                </span>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              {/* Editor Action Bar */}
+              <div className="flex justify-between items-center bg-gray-100 dark:bg-gray-900 px-4 py-2.5 rounded-t-lg border border-gray-300 dark:border-gray-700 border-b-0">
+                <div className="flex items-center space-x-2">
+                  <FileCode className="h-4 w-4 text-purple-500" />
+                  <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    {currentPaste.language || 'plaintext'}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2.5">
+                  {isExecutable && (
+                    <>
+                      <button
+                        onClick={handleRunCode}
+                        className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 flex items-center gap-1 focus:outline-none font-bold"
+                      >
+                        <Play className="h-3.5 w-3.5 fill-purple-600 dark:fill-purple-400" />
+                        Run Snippet
+                      </button>
+                      <span className="text-gray-300 dark:text-gray-700">|</span>
+                    </>
+                  )}
+                  <button
+                    onClick={() => setShowRaw(!showRaw)}
+                    className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium focus:outline-none"
+                  >
+                    {showRaw ? 'Show Highlighted' : 'Show Raw'}
+                  </button>
+                  <span className="text-gray-300 dark:text-gray-700">|</span>
+                  <button
+                    onClick={handleCopyCode}
+                    className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center gap-1 focus:outline-none font-medium"
+                  >
+                    {copiedCode ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+                    {copiedCode ? 'Copied' : 'Copy'}
+                  </button>
+                  <span className="text-gray-300 dark:text-gray-700">|</span>
+                  <button
+                    onClick={handleDownload}
+                    className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center gap-1 focus:outline-none font-medium"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Download
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setShowRaw(!showRaw)}
-                  className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium focus:outline-none"
-                >
-                  {showRaw ? 'Show Highlighted' : 'Show Raw'}
-                </button>
-                <span className="text-gray-300 dark:text-gray-700">|</span>
-                <button
-                  onClick={handleCopyCode}
-                  className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center gap-1 focus:outline-none font-medium"
-                >
-                  {copiedCode ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
-                  {copiedCode ? 'Copied' : 'Copy'}
-                </button>
-                <span className="text-gray-300 dark:text-gray-700">|</span>
-                <button
-                  onClick={handleDownload}
-                  className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center gap-1 focus:outline-none font-medium"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  Download
-                </button>
+
+              {/* Editor Body */}
+              <div className="relative border border-gray-300 dark:border-gray-700 rounded-b-lg overflow-hidden shadow-inner bg-gray-900">
+                {showRaw ? (
+                  <pre className="font-mono text-sm text-gray-200 p-4 bg-gray-900 overflow-x-auto whitespace-pre-wrap select-text h-[400px]">
+                    <code>{decryptedContent}</code>
+                  </pre>
+                ) : (
+                  <div className="max-h-[500px] overflow-y-auto">
+                    <SyntaxHighlighter
+                      language={currentPaste.language || 'plaintext'}
+                      style={atomOneDark}
+                      className="!bg-gray-900 !p-4 !m-0 !font-mono !text-sm"
+                      showLineNumbers
+                    >
+                      {decryptedContent}
+                    </SyntaxHighlighter>
+                  </div>
+                )}
+              </div>
+
+              {/* Metrics metadata bar */}
+              <div className="flex justify-between items-center text-[10px] text-gray-500 dark:text-gray-400 px-1 pt-1.5">
+                <div className="flex space-x-3">
+                  <span>Lines: <strong>{lineCount}</strong></span>
+                  <span>Words: <strong>{wordCount}</strong></span>
+                  <span>Characters: <strong>{charCount}</strong></span>
+                </div>
+                <span>Size: <strong className="text-purple-500">{formattedSize}</strong></span>
               </div>
             </div>
 
-            {/* Editor Body */}
-            <div className="relative border border-gray-300 dark:border-gray-700 rounded-b-lg overflow-hidden shadow-inner bg-gray-900">
-              {showRaw ? (
-                <pre className="font-mono text-sm text-gray-200 p-4 bg-gray-900 overflow-x-auto whitespace-pre-wrap select-text h-[400px]">
-                  <code>{decryptedContent}</code>
-                </pre>
-              ) : (
-                <div className="max-h-[500px] overflow-y-auto">
-                  <SyntaxHighlighter
-                    language={currentPaste.language || 'plaintext'}
-                    style={atomOneDark}
-                    className="!bg-gray-900 !p-4 !m-0 !font-mono !text-sm"
-                    showLineNumbers
+            {/* Execution Sandbox Console Panel */}
+            {showSandbox && (
+              <div className="bg-slate-950 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-lg animate-fadeIn">
+                <div className="bg-slate-900 dark:bg-slate-950 px-4 py-2 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                  <span className="text-xs font-bold text-gray-400 flex items-center">
+                    <TermIcon className="mr-1.5 h-3.5 w-3.5 text-purple-500" />
+                    Interactive Sandbox Playground
+                  </span>
+                  <button 
+                    onClick={() => setShowSandbox(false)}
+                    className="text-xs text-gray-500 hover:text-gray-300 focus:outline-none"
                   >
-                    {decryptedContent}
-                  </SyntaxHighlighter>
+                    Close
+                  </button>
                 </div>
-              )}
-            </div>
+                <div className="p-4 min-h-[150px] max-h-[350px] overflow-y-auto">
+                  {currentPaste.language === 'javascript' && (
+                    <div className="font-mono text-xs text-slate-300 space-y-1 select-text">
+                      {executionLogs.map((log, i) => (
+                        <div key={i} className="whitespace-pre-wrap leading-relaxed py-0.5 border-b border-slate-800 last:border-b-0">
+                          {log.startsWith('[ERROR]') ? (
+                            <span className="text-red-400 font-semibold">{log}</span>
+                          ) : log.startsWith('=>') ? (
+                            <span className="text-teal-400 font-semibold">{log}</span>
+                          ) : (
+                            log
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {currentPaste.language === 'html' && htmlSrcDoc && (
+                    <div className="border border-slate-800 rounded-lg overflow-hidden bg-white h-72">
+                      <iframe
+                        srcDoc={htmlSrcDoc}
+                        sandbox="allow-scripts"
+                        title="HTML Sandbox Playground"
+                        className="w-full h-full border-none bg-white"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

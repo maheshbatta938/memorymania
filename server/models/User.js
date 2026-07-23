@@ -29,6 +29,23 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
+    apiKeys: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        key: {
+          type: String,
+          required: true,
+          unique: true,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
@@ -52,7 +69,10 @@ userSchema.pre('save', async function (next) {
 
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
-  const JWT_SECRET = process.env.JWT_SECRET || 'memorymania_secret_key_2024';
+  const JWT_SECRET = process.env.JWT_SECRET;
+  if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is missing.');
+  }
   const token = jwt.sign({ _id: user._id.toString() }, JWT_SECRET);
   user.tokens = user.tokens.concat({ token });
   await user.save();

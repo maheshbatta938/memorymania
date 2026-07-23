@@ -1,5 +1,7 @@
 import express from 'express';
 import User from '../models/User.js';
+import auth from '../middleware/auth.js';
+import crypto from 'crypto';
 
 const router = express.Router();
 
@@ -8,7 +10,6 @@ router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      console.log('Registration failed: Missing required fields');
       return res.status(400).json({
         message: 'All fields are required',
       });
@@ -16,7 +17,6 @@ router.post('/register', async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      console.log('Registration failed: Email already exists:', email);
       return res.status(400).json({ message: 'Email already in use' });
     }
 
@@ -25,7 +25,6 @@ router.post('/register', async (req, res) => {
     await user.save();
 
     const token = await user.generateAuthToken();
-    console.log('Auth token generated for user:', user._id);
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -58,10 +57,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log('Login attempt for email:', email);
-
     if (!email || !password) {
-      console.log('Login failed: Missing credentials');
       return res.status(400).json({
         message: 'Email and password are required',
       });
@@ -69,7 +65,6 @@ router.post('/login', async (req, res) => {
 
 
     const user = await User.findByCredentials(email, password);
-    console.log('User found:', user._id);
 
     const token = await user.generateAuthToken();
     res.json({
@@ -88,6 +83,52 @@ router.post('/login', async (req, res) => {
       message: 'Invalid login credentials',
       error: error.message
     });
+  }
+});
+
+// Get all API keys of user
+router.get('/keys', auth, async (req, res) => {
+  try {
+    res.send(req.user.apiKeys || []);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
+// Generate a new API key
+router.post('/keys', auth, async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).send({ message: 'API key description/name is required' });
+    }
+
+    const key = 'nk_' + crypto.randomBytes(24).toString('hex');
+    const newApiKey = {
+      name: name.trim(),
+      key,
+      createdAt: new Date(),
+    };
+
+    req.user.apiKeys = (req.user.apiKeys || []).concat(newApiKey);
+    await req.user.save();
+
+    res.status(201).send(newApiKey);
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+});
+
+// Delete/revoke an API key
+router.delete('/keys/:id', auth, async (req, res) => {
+  try {
+    req.user.apiKeys = (req.user.apiKeys || []).filter(
+      (k) => k._id.toString() !== req.params.id
+    );
+    await req.user.save();
+    res.send({ message: 'API key revoked successfully' });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
   }
 });
 

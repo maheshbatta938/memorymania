@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
-const MainLayout = ({ requireAuth = false }) => {
+const MainLayout = ({ requireAuth = false, redirectIfAuth = false }) => {
   const { user, isLoading } = useAuth();
 
   // If authentication is required and user is not logged in
@@ -12,8 +12,8 @@ const MainLayout = ({ requireAuth = false }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // If user is logged in and trying to access auth pages
-  if (!requireAuth && !isLoading && user) {
+  // If user is logged in and trying to access auth pages (login/signup)
+  if (redirectIfAuth && !isLoading && user) {
     return <Navigate to="/dashboard" replace />;
   }
 

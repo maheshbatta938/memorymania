@@ -1,5 +1,6 @@
 import express from 'express';
 import auth from '../middleware/auth.js';
+import authApiKey from '../middleware/authApiKey.js';
 import Paste from '../models/Paste.js';
 
 const router = express.Router();
@@ -189,6 +190,46 @@ router.delete('/:id', auth, async (req, res) => {
     res.send({ message: 'Paste deleted successfully' });
   } catch (error) {
     res.status(500).send({ message: error.message });
+  }
+});
+
+// Toggle star status of a paste
+router.put('/:id/star', auth, async (req, res) => {
+  try {
+    const paste = await Paste.findOne({ _id: req.params.id, userId: req.user._id });
+    if (!paste) {
+      return res.status(404).send({ message: 'Paste not found' });
+    }
+    
+    paste.isStarred = !paste.isStarred;
+    await paste.save();
+    res.send(paste);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
+// Create paste via developer API Key (programmatic access)
+router.post('/api', authApiKey, async (req, res) => {
+  try {
+    const { title, content, tags, language } = req.body;
+    if (!title || !content) {
+      return res.status(400).send({ message: 'Title and content are required' });
+    }
+    
+    const paste = new Paste({
+      title: title.trim(),
+      content,
+      tags: tags || [],
+      language: language || 'plaintext',
+      userId: req.user._id,
+      isPublic: true, // Default programmatically created notes as public for ease of share
+    });
+    
+    await paste.save();
+    res.status(201).send(paste);
+  } catch (error) {
+    res.status(400).send({ message: error.message });
   }
 });
 

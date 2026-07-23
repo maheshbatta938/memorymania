@@ -5,7 +5,7 @@ import api from '../services/api';
 const AuthContext = createContext();
 
 const initialState = {
-  user: null,
+  user: JSON.parse(localStorage.getItem('user')) || null,
   token: localStorage.getItem('token'),
   isLoading: false,
   error: null,
@@ -52,12 +52,14 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (state.token) {
       localStorage.setItem('token', state.token);
+      localStorage.setItem('user', JSON.stringify(state.user));
       axios.defaults.headers.common['Authorization'] = `Bearer ${state.token}`;
     } else {
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
       delete axios.defaults.headers.common['Authorization'];
     }
-  }, [state.token]);
+  }, [state.token, state.user]);
 
   const login = async (email, password) => {
     dispatch({ type: 'AUTH_START' });

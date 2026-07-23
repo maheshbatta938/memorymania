@@ -44,6 +44,15 @@ const pasteSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    folderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Folder',
+      default: null,
+    },
+    isStarred: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

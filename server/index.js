@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import pasteRoutes from './routes/pastes.js';
+import folderRoutes from './routes/folders.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,10 +20,12 @@ const PORT = process.env.PORT || 5000;
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 //  MongoDB Connection
-const MONGO_URI =
-  process.env.MONGO_URI ||
-  process.env.MONGODB_URI ||
-  'mongodb+srv://memoryUser:Memorymania@memorymania.8sak7sm.mongodb.net/memorymania?retryWrites=true&w=majority&appName=memorymania';
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+
+if (!MONGO_URI) {
+  console.error('FATAL ERROR: MONGO_URI / MONGODB_URI is not defined in the environment.');
+  process.exit(1);
+}
 
 console.log('Attempting to connect to MongoDB...');
 
@@ -65,7 +68,6 @@ app.use(express.json());
 //  Request logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-  console.log('Request body:', req.body);
   next();
 });
 
@@ -73,6 +75,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/pastes', pasteRoutes);
+app.use('/api/folders', folderRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });

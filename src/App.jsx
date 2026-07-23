@@ -44,7 +44,7 @@ function App() {
             </Route>
             
          
-            <Route path="/" element={<MainLayout />}>
+            <Route path="/" element={<MainLayout redirectIfAuth />}>
               <Route path="login" element={<LoginPage />} />
               <Route path="signup" element={<SignupPage />} />
             </Route>
