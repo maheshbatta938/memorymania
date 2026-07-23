@@ -62,7 +62,7 @@ router.post('/register', async (req, res) => {
     
     res.status(500).json({ 
       message: 'Server error during registration',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: error.message
     });
   }
 });
@@ -105,7 +105,7 @@ router.post('/login', async (req, res) => {
     
     res.status(400).json({ 
       message: 'Invalid login credentials',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: error.message
     });
   }
 });
