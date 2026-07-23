@@ -1,12 +1,24 @@
 import axios from 'axios';
 import config from '../config';
 
+const getBaseURL = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return `${import.meta.env.VITE_API_URL}/api`;
+  }
+  if (import.meta.env.DEV) {
+    return '/api';
+  }
+  return `${config.apiUrl}/api`;
+};
+
 const api = axios.create({
-  baseURL: `https://memorymania-kfgn.onrender.com/api`,
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json'
   }
 });
+
+axios.defaults.baseURL = getBaseURL();
 
 api.interceptors.request.use(
   (config) => {

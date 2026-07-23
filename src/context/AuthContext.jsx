@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import axios from 'axios';
+import api from '../services/api';
 
 const AuthContext = createContext();
 
@@ -61,7 +62,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     dispatch({ type: 'AUTH_START' });
     try {
-      const res = await axios.post('https://memorymania-kfgn.onrender.com/api/auth/login', {
+      const res = await api.post('/auth/login', {
         email,
         password,
       });
@@ -79,7 +80,7 @@ export const AuthProvider = ({ children }) => {
   const signup = async (name, email, password) => {
     dispatch({ type: 'AUTH_START' });
     try {
-      const res = await axios.post('https://memorymania-kfgn.onrender.com/api/auth/register', {
+      const res = await api.post('/auth/register', {
         name,
         email,
         password,

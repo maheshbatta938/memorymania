@@ -1,5 +1,5 @@
 const config = {
-  apiUrl: "https://memorymania-kfgn.onrender.com"
+  apiUrl: import.meta.env.VITE_API_URL || "https://memorymania-kc51.onrender.com"
 };
 
 export default config;

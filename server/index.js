@@ -9,10 +9,10 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import pasteRoutes from './routes/pastes.js';
 
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -26,10 +26,7 @@ const MONGO_URI =
 console.log('Attempting to connect to MongoDB...');
 
 mongoose
-  .connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(MONGO_URI)
   .then(() => {
     console.log('✅ Successfully connected to MongoDB');
     console.log(`Database name: ${mongoose.connection.name}`);
@@ -42,9 +39,11 @@ mongoose
 //  CORS setup
 const allowedOrigins = [
   "http://localhost:5173",
+  process.env.CLIENT_URL,
   "https://memorymaniacomplete.onrender.com",
+  "https://memorymania-frontend.onrender.com",
   "https://memorymania.vercel.app"
-];
+].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -59,7 +58,7 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use(cors(corsOptions));
+
 app.use(express.json());
 
 //  Request logging middleware

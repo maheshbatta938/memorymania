@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import axios from 'axios';
+import api from '../services/api';
 import { useAuth } from './AuthContext';
 
 const initialState = {
@@ -78,7 +79,7 @@ export const PasteProvider = ({ children }) => {
   const fetchPastes = async () => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.get('https://memorymania-kfgn.onrender.com/api/pastes');
+      const res = await api.get('/pastes');
       dispatch({ type: 'FETCH_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
@@ -91,7 +92,7 @@ export const PasteProvider = ({ children }) => {
   const createPaste = async (paste) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.post('https://memorymania-kfgn.onrender.com/api/pastes', paste);
+      const res = await api.post('/pastes', paste);
       dispatch({ type: 'CREATE_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
@@ -104,7 +105,7 @@ export const PasteProvider = ({ children }) => {
   const updatePaste = async (id, paste) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.put(`https://memorymania-kfgn.onrender.com/api/pastes/${id}`, paste);
+      const res = await api.put(`/pastes/${id}`, paste);
       dispatch({ type: 'UPDATE_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
@@ -117,7 +118,7 @@ export const PasteProvider = ({ children }) => {
   const deletePaste = async (id) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      await axios.delete(`https://memorymania-kfgn.onrender.com/api/pastes/${id}`);
+      await api.delete(`/pastes/${id}`);
       dispatch({ type: 'DELETE_SUCCESS', payload: id });
     } catch (error) {
       dispatch({
@@ -130,7 +131,7 @@ export const PasteProvider = ({ children }) => {
   const getPasteById = async (id) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.get(`https://memorymania-kfgn.onrender.com/api/pastes/${id}`);
+      const res = await api.get(`/pastes/${id}`);
       dispatch({ type: 'GET_PASTE_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
@@ -143,7 +144,7 @@ export const PasteProvider = ({ children }) => {
   const searchPastes = async (query) => {
     dispatch({ type: 'FETCH_START' });
     try {
-      const res = await axios.get(`https://memorymania-kfgn.onrender.com/api/pastes/search?q=${query}`);
+      const res = await api.get(`/pastes/search?q=${query}`);
       dispatch({ type: 'FETCH_SUCCESS', payload: res.data });
     } catch (error) {
       dispatch({
