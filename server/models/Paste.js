@@ -20,6 +20,30 @@ const pasteSchema = new mongoose.Schema(
       required: true,
       ref: 'User',
     },
+    language: {
+      type: String,
+      default: 'plaintext',
+    },
+    isPublic: {
+      type: Boolean,
+      default: false,
+    },
+    isEncrypted: {
+      type: Boolean,
+      default: false,
+    },
+    expiresAt: {
+      type: Date,
+      default: null,
+    },
+    burnAfterRead: {
+      type: Boolean,
+      default: false,
+    },
+    viewCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
@@ -27,6 +51,7 @@ const pasteSchema = new mongoose.Schema(
 );
 
 pasteSchema.index({ title: 'text', content: 'text', tags: 'text' });
+pasteSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 const Paste = mongoose.model('Paste', pasteSchema);
 

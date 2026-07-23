@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { 
-  Menu, X, LogOut, User, Moon, Sun, Database, Plus, Search 
+  Menu, X, LogOut, User, Moon, Sun, FileCode, Plus, Search, BarChart3 
 } from 'lucide-react';
 import Button from '../ui/Button';
 
@@ -39,9 +39,9 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <Database className="h-8 w-8 text-purple-600" />
+              <FileCode className="h-8 w-8 text-purple-600" />
               <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">
-                MemoryMania
+                NotesApp
               </span>
             </Link>
           </div>
@@ -77,6 +77,12 @@ const Navbar = () => {
                   <Button variant="ghost" size="sm">
                     <Search className="mr-1 h-4 w-4" />
                     Search
+                  </Button>
+                </Link>
+                <Link to="/analytics">
+                  <Button variant="ghost" size="sm">
+                    <BarChart3 className="mr-1 h-4 w-4" />
+                    Analytics
                   </Button>
                 </Link>
                 <div className="relative group">
@@ -163,6 +169,13 @@ const Navbar = () => {
                 onClick={toggleMenu}
               >
                 Search
+              </Link>
+              <Link
+                to="/analytics"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={toggleMenu}
+              >
+                Analytics
               </Link>
               <button
                 onClick={() => {

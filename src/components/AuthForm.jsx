@@ -86,7 +86,7 @@ const AuthForm = ({ type }) => {
           <KeyRound size={32} className="text-white" />
         </div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {type === 'login' ? 'Log In to MemoryMania' : 'Create an Account'}
+          {type === 'login' ? 'Log In to NotesApp' : 'Create an Account'}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
           {type === 'login'

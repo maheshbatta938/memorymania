@@ -15,6 +15,7 @@ import CreatePastePage from './pages/CreatePastePage';
 import EditPastePage from './pages/EditPastePage';
 import ViewPastePage from './pages/ViewPastePage';
 import SearchPage from './pages/SearchPage';
+import AnalyticsPage from './pages/AnalyticsPage';
 
 // Set axios defaults
 axios.defaults.baseURL = config.apiUrl;
@@ -39,6 +40,7 @@ function App() {
            
             <Route path="/" element={<MainLayout />}>
               <Route index element={<HomePage />} />
+              <Route path="shared/:id" element={<ViewPastePage isSharedView />} />
             </Route>
             
          
@@ -54,6 +56,7 @@ function App() {
               <Route path="edit/:id" element={<EditPastePage />} />
               <Route path="view/:id" element={<ViewPastePage />} />
               <Route path="search" element={<SearchPage />} />
+              <Route path="analytics" element={<AnalyticsPage />} />
             </Route>
           </Routes>
         </Router>

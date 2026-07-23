@@ -13,7 +13,7 @@ const HomePage = () => {
             Store your <span className="text-purple-600">important snippets</span> securely
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-            MemoryMania helps you securely store, organize, and retrieve your code snippets, credentials, and other important text in one place.
+            NotesApp helps you securely store, organize, and retrieve your code snippets, credentials, and other important text in one place.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link to="/signup">
@@ -119,7 +119,7 @@ const auth = async (req, res, next) => {
               Ready to organize your digital memory?
             </h2>
             <p className="text-white text-lg mb-8 max-w-2xl mx-auto">
-              Join thousands of developers and IT professionals who trust MemoryMania to store their important code snippets and credentials.
+              Join thousands of developers and IT professionals who trust NotesApp to store their important code snippets and credentials.
             </p>
             <Link to="/signup">
               <Button

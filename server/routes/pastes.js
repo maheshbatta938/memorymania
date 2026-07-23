@@ -4,6 +4,88 @@ import Paste from '../models/Paste.js';
 
 const router = express.Router();
 
+// Get analytics overview (requires auth)
+router.get('/stats/overview', auth, async (req, res) => {
+  try {
+    const pastes = await Paste.find({ userId: req.user._id });
+    
+    const totalPastes = pastes.length;
+    const totalViews = pastes.reduce((acc, curr) => acc + (curr.viewCount || 0), 0);
+    
+    // Calculate language distribution
+    const languageCounts = {};
+    pastes.forEach(p => {
+      const lang = p.language || 'plaintext';
+      languageCounts[lang] = (languageCounts[lang] || 0) + 1;
+    });
+    const languageData = Object.keys(languageCounts).map(name => ({
+      name,
+      value: languageCounts[name]
+    }));
+    
+    // Calculate creation history (last 7 days)
+    const historyData = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateString = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      
+      const count = pastes.filter(p => {
+        const pDate = new Date(p.createdAt);
+        return pDate.toDateString() === date.toDateString();
+      }).length;
+      
+      historyData.push({
+        date: dateString,
+        count
+      });
+    }
+    
+    res.send({
+      totalPastes,
+      totalViews,
+      languageData,
+      historyData
+    });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
+// Access a public paste by ID (no auth required)
+router.get('/public/:id', async (req, res) => {
+  try {
+    const paste = await Paste.findById(req.params.id);
+    
+    if (!paste) {
+      return res.status(404).send({ message: 'Paste not found' });
+    }
+    
+    if (!paste.isPublic) {
+      return res.status(403).send({ message: 'Access denied (private paste)' });
+    }
+    
+    // Check if expired
+    if (paste.expiresAt && new Date(paste.expiresAt) < new Date()) {
+      await Paste.findByIdAndDelete(paste._id);
+      return res.status(404).send({ message: 'Paste expired' });
+    }
+    
+    // Update view count
+    paste.viewCount = (paste.viewCount || 0) + 1;
+    await paste.save();
+    
+    // If burn after read, delete immediately after serving
+    if (paste.burnAfterRead) {
+      await Paste.findByIdAndDelete(paste._id);
+    }
+    
+    res.send(paste);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
 router.post('/', auth, async (req, res) => {
   try {
     const paste = new Paste({
@@ -70,7 +152,7 @@ router.get('/:id', auth, async (req, res) => {
 
 router.put('/:id', auth, async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowedUpdates = ['title', 'content', 'tags'];
+  const allowedUpdates = ['title', 'content', 'tags', 'language', 'isPublic', 'expiresAt', 'burnAfterRead', 'isEncrypted'];
   const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
   
   if (!isValidOperation) {

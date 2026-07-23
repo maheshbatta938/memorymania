@@ -61,7 +61,9 @@ const PasteContext = createContext({
   updatePaste: async () => {},
   deletePaste: async () => {},
   getPasteById: async () => {},
+  getPublicPasteById: async () => {},
   searchPastes: async () => {},
+  fetchOverviewStats: async () => {},
 });
 
 export const usePaste = () => useContext(PasteContext);
@@ -154,6 +156,31 @@ export const PasteProvider = ({ children }) => {
     }
   };
 
+  const getPublicPasteById = async (id) => {
+    dispatch({ type: 'FETCH_START' });
+    try {
+      const res = await api.get(`/pastes/public/${id}`);
+      dispatch({ type: 'GET_PASTE_SUCCESS', payload: res.data });
+      return res.data;
+    } catch (error) {
+      dispatch({
+        type: 'FETCH_FAILURE',
+        payload: error.response?.data?.message || 'Failed to get public paste',
+      });
+      throw error;
+    }
+  };
+
+  const fetchOverviewStats = async () => {
+    try {
+      const res = await api.get('/pastes/stats/overview');
+      return res.data;
+    } catch (error) {
+      console.error('Failed to fetch overview stats', error);
+      throw error;
+    }
+  };
+
   return (
     <PasteContext.Provider
       value={{
@@ -163,7 +190,9 @@ export const PasteProvider = ({ children }) => {
         updatePaste,
         deletePaste,
         getPasteById,
+        getPublicPasteById,
         searchPastes,
+        fetchOverviewStats,
       }}
     >
       {children}
