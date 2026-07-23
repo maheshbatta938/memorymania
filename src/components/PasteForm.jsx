@@ -8,7 +8,7 @@ import { Save, X, Tag } from 'lucide-react';
 
 const PasteForm = ({ isEditing = false, pasteId = '' }) => {
   const navigate = useNavigate();
-  const { createPaste, updatePaste, currentPaste } = usePaste();
+  const { createPaste, updatePaste, getPasteById, currentPaste } = usePaste();
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -18,14 +18,20 @@ const PasteForm = ({ isEditing = false, pasteId = '' }) => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    if (isEditing && currentPaste) {
+    if (isEditing && pasteId) {
+      getPasteById(pasteId);
+    }
+  }, [isEditing, pasteId]);
+
+  useEffect(() => {
+    if (isEditing && currentPaste && currentPaste._id === pasteId) {
       setFormData({
         title: currentPaste.title,
         content: currentPaste.content,
         tags: currentPaste.tags || [],
       });
     }
-  }, [isEditing, currentPaste]);
+  }, [isEditing, currentPaste, pasteId]);
 
   const validateForm = () => {
     const newErrors = {};

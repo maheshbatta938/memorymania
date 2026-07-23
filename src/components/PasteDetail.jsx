@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { usePaste } from '../context/PasteContext';
 import Button from './ui/Button';
 import { Edit, Trash2, ArrowLeft, Calendar, Tag, Clock } from 'lucide-react';
-import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
+import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 const PasteDetail = () => {
