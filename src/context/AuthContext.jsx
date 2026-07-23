@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       dispatch({
         type: 'AUTH_FAILURE',
-        payload: error.response?.data?.message || 'Login failed',
+        payload: error.response?.data?.error || error.response?.data?.message || 'Login failed',
       });
       throw error;
     }
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       dispatch({
         type: 'AUTH_FAILURE',
-        payload: error.response?.data?.message || 'Registration failed',
+        payload: error.response?.data?.error || error.response?.data?.message || 'Registration failed',
       });
       throw error;
     }
