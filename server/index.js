@@ -21,6 +21,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 //  MongoDB Connection
 const MONGO_URI =
   process.env.MONGO_URI ||
+  process.env.MONGODB_URI ||
   'mongodb+srv://memoryUser:Memorymania@memorymania.8sak7sm.mongodb.net/memorymania?retryWrites=true&w=majority&appName=memorymania';
 
 console.log('Attempting to connect to MongoDB...');
