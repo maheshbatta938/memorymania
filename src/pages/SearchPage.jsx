@@ -2,16 +2,25 @@ import React from 'react';
 import { usePaste } from '../context/PasteContext';
 import PasteCard from '../components/PasteCard';
 import SearchBar from '../components/SearchBar';
-import { SearchX } from 'lucide-react';
+import { SearchX, Search } from 'lucide-react';
 
 const SearchPage = () => {
   const { pastes, isLoading } = usePaste();
 
   return (
-    <div className="container mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-        Search Pastes
-      </h1>
+    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Decorative background glow */}
+      <div className="absolute top-[-10%] left-[-10%] w-[300px] h-[300px] rounded-full bg-purple-500/5 blur-[80px] pointer-events-none" />
+
+      <div className="mb-8">
+        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center">
+          <Search className="mr-2 text-purple-600 h-8 w-8" />
+          Search Snippets
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Perform a fuzzy search across titles, contents, tags, and languages.
+        </p>
+      </div>
 
       <SearchBar />
 
@@ -26,13 +35,13 @@ const SearchPage = () => {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg p-12 text-center">
-          <SearchX className="h-16 w-16 text-gray-400 mb-4" />
-          <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+        <div className="flex flex-col items-center justify-center bg-white/50 dark:bg-[#0f172a]/40 backdrop-blur-sm border border-slate-200/50 dark:border-slate-800/40 rounded-xl p-12 text-center shadow-sm max-w-lg mx-auto mt-12">
+          <SearchX className="h-16 w-16 text-slate-400 dark:text-slate-600 mb-4" />
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
             No results found
           </h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
-            Try different keywords or check your spelling.
+          <p className="text-gray-500 dark:text-gray-400 text-sm max-w-md">
+            We couldn't find any snippets matching your criteria. Try different keywords, tags, or check for typos.
           </p>
         </div>
       )}
@@ -40,4 +49,4 @@ const SearchPage = () => {
   );
 };
 
-export default SearchPage; 
+export default SearchPage;

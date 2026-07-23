@@ -4,7 +4,7 @@ import { usePaste } from '../context/PasteContext';
 import Button from '../components/ui/Button';
 import PasteCard from '../components/PasteCard';
 import SearchBar from '../components/SearchBar';
-import { Plus, RefreshCw, FolderOpen } from 'lucide-react';
+import { Plus, RefreshCw, FolderOpen, Terminal } from 'lucide-react';
 
 const DashboardPage = () => {
   const { pastes, fetchPastes, isLoading, error } = usePaste();
@@ -14,24 +14,36 @@ const DashboardPage = () => {
   }, []);
 
   return (
-    <div className="container mx-auto">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 md:mb-0">
-          Your Saved Pastes
-        </h1>
-        <div className="flex space-x-3">
+    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Background decoration */}
+      <div className="absolute top-[-10%] right-[-10%] w-[300px] h-[300px] rounded-full bg-purple-500/5 blur-[80px] pointer-events-none" />
+
+      {/* Header Block */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center">
+            <Terminal className="mr-2 text-purple-600 h-8 w-8" />
+            Dashboard
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Manage your stashed code snippets and secure text notes.
+          </p>
+        </div>
+        
+        <div className="flex space-x-3 w-full sm:w-auto justify-end">
           <Button
             variant="ghost"
             onClick={() => fetchPastes()}
             disabled={isLoading}
+            className="border border-slate-200 dark:border-slate-800"
           >
-            <RefreshCw className={`mr-1 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`mr-1.5 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
           <Link to="/create">
             <Button variant="primary">
-              <Plus className="mr-1 h-4 w-4" />
-              New Paste
+              <Plus className="mr-1.5 h-4 w-4" />
+              New Snippet
             </Button>
           </Link>
         </div>
@@ -40,8 +52,8 @@ const DashboardPage = () => {
       <SearchBar />
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-          <p>{error}</p>
+        <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-6">
+          <p className="font-medium">{error}</p>
         </div>
       )}
 
@@ -56,18 +68,18 @@ const DashboardPage = () => {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg p-12 text-center">
-          <FolderOpen className="h-16 w-16 text-gray-400 mb-4" />
-          <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
-            No pastes found
+        <div className="flex flex-col items-center justify-center bg-white/50 dark:bg-[#0f172a]/40 backdrop-blur-sm border border-slate-200/50 dark:border-slate-800/40 rounded-xl p-12 text-center shadow-sm max-w-lg mx-auto mt-12">
+          <FolderOpen className="h-16 w-16 text-slate-400 dark:text-slate-600 mb-4" />
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            No snippets found
           </h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md">
-            You haven't created any pastes yet. Start by creating your first paste to store your code, credentials, or any text.
+          <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm max-w-md">
+            You haven't stashed any snippets yet. Create your first paste to store config files, code snippets, or environment templates.
           </p>
           <Link to="/create">
             <Button variant="primary">
-              <Plus className="mr-1 h-4 w-4" />
-              Create Your First Paste
+              <Plus className="mr-1.5 h-4 w-4" />
+              Stash First Snippet
             </Button>
           </Link>
         </div>
@@ -76,4 +88,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage; 
+export default DashboardPage;

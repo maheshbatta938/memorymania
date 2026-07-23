@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Input from './ui/Input';
 import Button from './ui/Button';
-import { KeyRound, User, AtSign } from 'lucide-react';
+import { KeyRound, User, AtSign, ShieldAlert } from 'lucide-react';
 
 const AuthForm = ({ type }) => {
   const [formData, setFormData] = useState({
@@ -64,7 +64,6 @@ const AuthForm = ({ type }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
     
     try {
@@ -80,108 +79,117 @@ const AuthForm = ({ type }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md mx-auto">
-      <div className="flex flex-col items-center mb-6">
-        <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mb-4">
-          <KeyRound size={32} className="text-white" />
-        </div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {type === 'login' ? 'Log In to NotesApp' : 'Create an Account'}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
-          {type === 'login'
-            ? 'Enter your credentials to access your account'
-            : 'Fill out the form to get started'}
-        </p>
-      </div>
+    <div className="relative w-full max-w-md mx-auto my-12">
+      {/* Decorative Glow */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-teal-500 rounded-2xl blur opacity-25"></div>
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {error}
+      <div className="relative glass-card p-8 w-full bg-white/80 dark:bg-[#0f172a]/70 backdrop-blur-md rounded-2xl shadow-xl">
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/20 mb-4 transform hover:rotate-12 transition-transform duration-300">
+            <KeyRound size={26} className="text-white" />
+          </div>
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+            {type === 'login' ? 'Welcome Back' : 'Create Account'}
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5 text-center">
+            {type === 'login'
+              ? 'Sign in to NotesApp to access your stashes'
+              : 'Stash code securely with local client AES encryption'}
+          </p>
         </div>
-      )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {type === 'signup' && (
-          <div className="relative">
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              label="Full Name"
-              placeholder="Enter your name"
-              value={formData.name}
-              onChange={handleChange}
-              error={errors.name}
-              fullWidth
-              required
-            />
-            <div className="absolute top-9 right-3 text-gray-400">
-              <User size={18} />
-            </div>
+        {error && (
+          <div className="mb-6 p-3.5 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm flex items-start gap-2.5">
+            <ShieldAlert size={18} className="shrink-0 mt-0.5" />
+            <p>{error}</p>
           </div>
         )}
 
-        <div className="relative">
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            label="Email Address"
-            placeholder="Enter your email"
-            value={formData.email}
-            onChange={handleChange}
-            error={errors.email}
-            fullWidth
-            required
-          />
-          <div className="absolute top-9 right-3 text-gray-400">
-            <AtSign size={18} />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {type === 'signup' && (
+            <div className="relative">
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                label="Full Name"
+                placeholder="Name"
+                value={formData.name}
+                onChange={handleChange}
+                error={errors.name}
+                fullWidth
+                required
+                className="pr-10 dark:bg-slate-900/60"
+              />
+              <div className="absolute top-9.5 right-3 text-gray-400 pointer-events-none">
+                <User size={16} />
+              </div>
+            </div>
+          )}
+
+          <div className="relative">
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              label="Email Address"
+              placeholder="you@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              error={errors.email}
+              fullWidth
+              required
+              className="pr-10 dark:bg-slate-900/60"
+            />
+            <div className="absolute top-9.5 right-3 text-gray-400 pointer-events-none">
+              <AtSign size={16} />
+            </div>
           </div>
-        </div>
 
-        <div className="relative">
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            label="Password"
-            placeholder="Enter your password"
-            value={formData.password}
-            onChange={handleChange}
-            error={errors.password}
-            fullWidth
-            required
-          />
-          <div className="absolute top-9 right-3 text-gray-400">
-            <KeyRound size={18} />
+          <div className="relative">
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              label="Password"
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={handleChange}
+              error={errors.password}
+              fullWidth
+              required
+              className="pr-10 dark:bg-slate-900/60"
+            />
+            <div className="absolute top-9.5 right-3 text-gray-400 pointer-events-none">
+              <KeyRound size={16} />
+            </div>
           </div>
-        </div>
 
-        <Button
-          type="submit"
-          variant="primary"
-          fullWidth
-          isLoading={isLoading}
-          className="mt-6"
-        >
-          {type === 'login' ? 'Log In' : 'Sign Up'}
-        </Button>
-      </form>
-
-      <div className="mt-6 text-center">
-        <p className="text-gray-600 dark:text-gray-400">
-          {type === 'login' ? "Don't have an account? " : 'Already have an account? '}
-          <Link
-            to={type === 'login' ? '/signup' : '/login'}
-            className="text-purple-600 hover:text-purple-800 font-medium"
+          <Button
+            type="submit"
+            variant="primary"
+            fullWidth
+            isLoading={isLoading}
+            className="mt-6 py-2.5 font-bold shadow-lg shadow-purple-600/20"
           >
-            {type === 'login' ? 'Sign up' : 'Log in'}
-          </Link>
-        </p>
+            {type === 'login' ? 'Sign In' : 'Sign Up'}
+          </Button>
+        </form>
+
+        <div className="mt-8 text-center border-t border-slate-200/50 dark:border-slate-800/40 pt-5">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {type === 'login' ? "New to NotesApp? " : 'Already have an account? '}
+            <Link
+              to={type === 'login' ? '/signup' : '/login'}
+              className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold"
+            >
+              {type === 'login' ? 'Create an Account' : 'Sign In'}
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default AuthForm; 
+export default AuthForm;

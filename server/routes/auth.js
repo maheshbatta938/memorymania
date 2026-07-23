@@ -29,6 +29,8 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({
       message: 'User registered successfully',
+      user: user.toJSON(),
+      token
     });
   } catch (error) {
     console.log('Registration error:', error);
@@ -72,6 +74,8 @@ router.post('/login', async (req, res) => {
     const token = await user.generateAuthToken();
     res.json({
       message: 'Login successful',
+      user: user.toJSON(),
+      token
     });
   } catch (error) {
     console.error('Login error:', error);
